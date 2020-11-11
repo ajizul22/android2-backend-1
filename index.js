@@ -6,14 +6,14 @@ const app = express()
 const port = process.env.PORT
 
 // Middleware
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({ extended: false }))
 
 app.get('/', (request, response) => {
   response.send('Backend by Android2!')
 })
 
 app.get('/project', (req, res) => {
-  db.query(`SELECT * FROM project`, (err, result, fields) => {
+  db.query('SELECT * FROM project', (err, result, fields) => {
     if (!err) {
       if (result.length) {
         res.status(200).send({
@@ -26,19 +26,17 @@ app.get('/project', (req, res) => {
           success: false,
           message: 'Item project not found!'
         })
-      }      
+      }
     } else {
       res.status(500).send({
         success: false,
         message: 'Internal Server Error!'
       })
     }
-
   })
 })
 
 app.post('/project', (req, res) => {
-
   const { projectName, projectDesc, projectType } = req.body
 
   db.query(`INSERT INTO project (project_name, project_desc, project_type) 
@@ -67,10 +65,9 @@ app.post('/project', (req, res) => {
 app.delete('/project/:projectId', (req, res) => {
   const { projectId } = req.params
 
-  db.query(`SELECT * FROM project WHERE project_id = ${projectId}`, (err, result, fields) => {
+  db.query(`SELECT * FROM project WHERE project_id = ${projectId}`, (_err, result, _fields) => {
     if (result.length) {
-
-      db.query(`DELETE FROM project WHERE project_id = ${projectId}`, (err, result, fields) => {
+      db.query(`DELETE FROM project WHERE project_id = ${projectId}`, (_err, result, _fields) => {
         if (result.affectedRows) {
           res.status(200).send({
             success: true,
@@ -83,7 +80,6 @@ app.delete('/project/:projectId', (req, res) => {
           })
         }
       })
-
     } else {
       res.status(404).send({
         success: false,
@@ -91,17 +87,16 @@ app.delete('/project/:projectId', (req, res) => {
       })
     }
   })
-
 })
 
 app.put('/project/:projectId', (req, res) => {
   const { projectId } = req.params
   const { projectName, projectDesc, projectType } = req.body
 
-  if (projectName.trim() && projectDesc.trim() &&  projectType.trim()) {
-    db.query(`SELECT * FROM project WHERE project_id = ${projectId}`, (err, result, fields) => {
+  if (projectName.trim() && projectDesc.trim() && projectType.trim()) {
+    db.query(`SELECT * FROM project WHERE project_id = ${projectId}`, (_err, result, _fields) => {
       if (result.length) {
-        db.query(`UPDATE project SET project_name = '${projectName}', project_desc = '${projectDesc}', project_type = '${projectType}' WHERE project_id = ${projectId} `, (err, result, fields) => {
+        db.query(`UPDATE project SET project_name = '${projectName}', project_desc = '${projectDesc}', project_type = '${projectType}' WHERE project_id = ${projectId} `, (_err, result, _fields) => {
           if (result.affectedRows) {
             res.status(200).send({
               success: true,
@@ -131,21 +126,21 @@ app.put('/project/:projectId', (req, res) => {
 
 app.patch('/project/:projectId', (req, res) => {
   const { projectId } = req.params
-  const { 
-    project_name = '', 
-    project_desc = '', 
-    project_type = '' 
+  const {
+    project_name = '',
+    project_desc = '',
+    project_type = ''
   } = req.body
 
-  if (project_name.trim() || project_desc.trim() ||  project_type.trim()) { 
-    db.query(`SELECT * FROM project WHERE project_id = ${projectId}`, (err, result, fields) => {
+  if (project_name.trim() || project_desc.trim() || project_type.trim()) {
+    db.query(`SELECT * FROM project WHERE project_id = ${projectId}`, (_err, result, _fields) => {
       if (result.length) {
-
         const dataColumn = Object.entries(req.body).map(item => {
-          return parseInt(item[1]) > 0 ? `${item[0]=item[1]}` : `${item[0]}='${item[1]}'`
+          const queryDynamic = parseInt(item[1]) > 0 ? `${item[0] = item[1]}` : `${item[0]}='${item[1]}'`
+          return queryDynamic
         })
 
-        db.query(`UPDATE project SET ${dataColumn} WHERE project_id = ${projectId}`, (err, result, fields) => {
+        db.query(`UPDATE project SET ${dataColumn} WHERE project_id = ${projectId}`, (_err, result, _fields) => {
           if (result.affectedRows) {
             res.status(200).send({
               success: true,
@@ -158,7 +153,6 @@ app.patch('/project/:projectId', (req, res) => {
             })
           }
         })
-
       } else {
         res.status(404).send({
           success: false,
@@ -172,15 +166,12 @@ app.patch('/project/:projectId', (req, res) => {
       message: 'Some field must be filled!'
     })
   }
-
-
 })
 
 app.get('/project/:projectId', (req, res) => {
-
   const { projectId } = req.params
 
-  db.query(`SELECT * FROM project WHERE project_id = ${projectId}`, (err, result, fields) => {
+  db.query(`SELECT * FROM project WHERE project_id = ${projectId}`, (err, result, _fields) => {
     if (!err) {
       if (result.length) {
         res.status(200).send({
@@ -201,9 +192,7 @@ app.get('/project/:projectId', (req, res) => {
       })
     }
   })
-
-}) 
-
+})
 
 app.listen(port, () => {
   console.log(`Listen app backend on port ${port}`)
