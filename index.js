@@ -4,88 +4,14 @@ const db = require('./src/helpers/db')
 const bodyParser = require('body-parser')
 const app = express()
 const port = process.env.PORT
+const projectRouter = require('./src/routers/projects')
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use('/project', projectRouter)
 
 app.get('/', (_request, response) => {
   response.send('Backend by Android2!')
-})
-
-app.get('/project', (req, res) => {
-  let { search, limit, page } = req.query
-  let searchKey = ''
-  let searchValue = ''
-
-  if (typeof search === 'object') {
-    searchKey = Object.keys(search)[0]
-    searchValue = Object.values(search)[0]
-  } else {
-    searchKey = 'project_name'
-    searchValue = search || ''
-  }
-
-  if (!limit) {
-    limit = 50
-  } else {
-    limit = parseInt(limit)
-  }
-
-  if (!page) {
-    page = 1
-  } else {
-    page = parseInt(page)
-  }
-
-  const offset = (page - 1) * limit
-
-  db.query(`SELECT * FROM project WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset}`, (err, result, _fields) => {
-    if (!err) {
-      if (result.length) {
-        res.status(200).send({
-          success: true,
-          message: 'Project List',
-          data: result
-        })
-      } else {
-        res.status(404).send({
-          success: false,
-          message: 'Item project not found!'
-        })
-      }
-    } else {
-      res.status(500).send({
-        success: false,
-        message: 'Internal Server Error!'
-      })
-    }
-  })
-})
-
-app.post('/project', (req, res) => {
-  const { projectName, projectDesc, projectType } = req.body
-
-  db.query(`INSERT INTO project (project_name, project_desc, project_type) 
-  VALUES ('${projectName}', '${projectDesc}', '${projectType}')`, (err, result, _fields) => {
-    if (!err) {
-      if (result.affectedRows) {
-        res.status(200).send({
-          success: true,
-          message: 'Success add project!'
-        })
-      } else {
-        res.status(400).send({
-          success: false,
-          message: 'Submit project failed!'
-        })
-      }
-    } else {
-      res.status(500).send({
-        success: false,
-        message: 'Internal Server Error!'
-      })
-    }
-  })
 })
 
 app.delete('/project/:projectId', (req, res) => {
@@ -192,32 +118,6 @@ app.patch('/project/:projectId', (req, res) => {
       message: 'Some field must be filled!'
     })
   }
-})
-
-app.get('/project/:projectId', (req, res) => {
-  const { projectId } = req.params
-
-  db.query(`SELECT * FROM project WHERE project_id = ${projectId}`, (err, result, _fields) => {
-    if (!err) {
-      if (result.length) {
-        res.status(200).send({
-          success: true,
-          message: `Project with id ${projectId}`,
-          data: result[0]
-        })
-      } else {
-        res.status(404).send({
-          success: false,
-          message: 'Data project with id ' + projectId + ' not found'
-        })
-      }
-    } else {
-      req.status(500).send({
-        success: false,
-        message: 'Internal server error!'
-      })
-    }
-  })
 })
 
 app.listen(port, () => {
