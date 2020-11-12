@@ -14,33 +14,6 @@ app.get('/', (_request, response) => {
   response.send('Backend by Android2!')
 })
 
-app.delete('/project/:projectId', (req, res) => {
-  const { projectId } = req.params
-
-  db.query(`SELECT * FROM project WHERE project_id = ${projectId}`, (_err, result, _fields) => {
-    if (result.length) {
-      db.query(`DELETE FROM project WHERE project_id = ${projectId}`, (_err, result, _fields) => {
-        if (result.affectedRows) {
-          res.status(200).send({
-            success: true,
-            message: `Item project id ${projectId} has been deleted!`
-          })
-        } else {
-          res.status(404).send({
-            success: false,
-            message: 'Item project failed to delete!'
-          })
-        }
-      })
-    } else {
-      res.status(404).send({
-        success: false,
-        message: 'Data project not found!'
-      })
-    }
-  })
-})
-
 app.put('/project/:projectId', (req, res) => {
   const { projectId } = req.params
   const { projectName, projectDesc, projectType } = req.body

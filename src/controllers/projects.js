@@ -1,4 +1,4 @@
-const { getAllProjectModel, getProjectByIdModel, createProjectModel } = require('../models/projects')
+const { getAllProjectModel, getProjectByIdModel, createProjectModel, deleteProjectModel } = require('../models/projects')
 
 module.exports = {
   getAllProject: (req, res) => {
@@ -43,7 +43,7 @@ module.exports = {
       }
     })
   },
-  getProjectById: async (req,res) => {
+  getProjectById: async (req, res) => {
     try {
       const { projectId } = req.params
 
@@ -68,7 +68,7 @@ module.exports = {
       })
     }
   },
-  createProject: async (req,res) => {
+  createProject: async (req, res) => {
     try {
       const { projectName, projectDesc, projectType } = req.body
       const result = await createProjectModel(projectName, projectDesc, projectType)
@@ -87,6 +87,38 @@ module.exports = {
       res.status(500).send({
         success: false,
         message: 'Internal Server Error!'
+      })
+    }
+  },
+  deleteProject: async (req, res) => {
+    try {
+      const { projectId } = req.params
+
+      const resultSelect = await getProjectByIdModel(projectId)
+      if (resultSelect.length) {
+        const resultDelete = await deleteProjectModel(projectId)
+        if (resultDelete.affectedRows) {
+          res.status(200).send({
+            success: true,
+            message: `Item project id ${projectId} has been deleted!`
+          })
+        } else {
+          res.status(404).send({
+            success: false,
+            message: 'Item project failed to delete!'
+          })
+        }
+      } else {
+        res.status(404).send({
+          success: false,
+          message: 'Data project with id ' + projectId + ' not found'
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      req.status(500).send({
+        success: false,
+        message: 'Internal server error!'
       })
     }
   }

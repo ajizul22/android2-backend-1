@@ -33,5 +33,16 @@ module.exports = {
         }
       })
     })
+  },
+  deleteProjectModel: (projectId) => {
+    return new Promise((resolve, reject) => {
+      db.query(`DELETE FROM project WHERE project_id = ${projectId}`, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
   }
 }
