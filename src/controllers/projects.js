@@ -1,4 +1,4 @@
-const { getAllProjectModel, getProjectByIdModel, createProjectModel, deleteProjectModel } = require('../models/projects')
+const { getAllProjectModel, getProjectByIdModel, createProjectModel, deleteProjectModel, putProjectModel, patchProjectModel } = require('../models/projects')
 
 module.exports = {
   getAllProject: (req, res) => {
@@ -112,6 +112,95 @@ module.exports = {
         res.status(404).send({
           success: false,
           message: 'Data project with id ' + projectId + ' not found'
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      req.status(500).send({
+        success: false,
+        message: 'Internal server error!'
+      })
+    }
+  },
+  putProject: async (req, res) => {
+    try {
+      const { projectId } = req.params
+      const { projectName, projectDesc, projectType } = req.body
+
+      if (projectName.trim() && projectDesc.trim() && projectType.trim()) {
+        const resultSelect = await getProjectByIdModel(projectId)
+        if (resultSelect.length) {
+          const resultUpdate = await putProjectModel(projectName, projectDesc, projectType, projectId)
+          if (resultUpdate.affectedRows) {
+            res.status(200).send({
+              success: true,
+              message: `Project with id ${projectId} has been update`
+            })
+          } else {
+            res.status(404).send({
+              success: false,
+              message: 'Failed to update data!!'
+            })
+          }
+        } else {
+          res.status(404).send({
+            success: false,
+            message: 'Data project with id ' + projectId + ' not found'
+          })
+        }
+      } else {
+        res.status(400).send({
+          success: false,
+          message: 'All field must be filled!'
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      req.status(500).send({
+        success: false,
+        message: 'Internal server error!'
+      })
+    }
+  },
+  patchProject: async (req, res) => {
+    try {
+      const { projectId } = req.params
+      const {
+        project_name = '',
+        project_desc = '',
+        project_type = ''
+      } = req.body
+
+      if (project_name.trim() || project_desc.trim() || project_type.trim()) {
+        const resultSelect = await getProjectByIdModel(projectId)
+        if (resultSelect.length) {
+          const dataColumn = Object.entries(req.body).map(item => {
+            const queryDynamic = parseInt(item[1]) > 0 ? `${item[0] = item[1]}` : `${item[0]}='${item[1]}'`
+            return queryDynamic
+          })
+
+          const resultUpdate = await patchProjectModel(dataColumn, projectId)
+          if (resultUpdate.affectedRows) {
+            res.status(200).send({
+              success: true,
+              message: `Project with id ${projectId} has been updated!`
+            })
+          } else {
+            res.status(400).send({
+              success: false,
+              message: 'Failed to update data project'
+            })
+          }
+        } else {
+          res.status(404).send({
+            success: false,
+            message: `Project with id ${projectId} not found`
+          })
+        }
+      } else {
+        res.status(400).send({
+          success: false,
+          message: 'Some field must be filled!'
         })
       }
     } catch (error) {
