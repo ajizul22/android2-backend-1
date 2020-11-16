@@ -175,7 +175,7 @@ module.exports = {
         const resultSelect = await getProjectByIdModel(projectId)
         if (resultSelect.length) {
           const dataColumn = Object.entries(req.body).map(item => {
-            const queryDynamic = parseInt(item[1]) > 0 ? `${item[0] = item[1]}` : `${item[0]}='${item[1]}'`
+            const queryDynamic = parseInt(item[1]) > 0 ? `${item[0]} = ${item[1]}` : `${item[0]}='${item[1]}'`
             return queryDynamic
           })
 
