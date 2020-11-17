@@ -71,7 +71,13 @@ module.exports = {
   createProject: async (req, res) => {
     try {
       const { projectName, projectDesc, projectType } = req.body
-      const result = await createProjectModel(projectName, projectDesc, projectType)
+      const setData = {
+        project_name: projectName,
+        project_desc: projectDesc,
+        project_type: projectType,
+        project_image: req.file === undefined ? '' : req.file.filename
+      }
+      const result = await createProjectModel(setData)
       if (result.affectedRows) {
         res.status(200).send({
           success: true,

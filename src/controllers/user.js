@@ -1,6 +1,5 @@
 require('dotenv')
 const bycrpt = require('bcrypt')
-const { request } = require('express')
 const { postUserModel, getUserModel } = require('../models/user')
 const jwt = require('jsonwebtoken')
 

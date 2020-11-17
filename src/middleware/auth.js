@@ -7,14 +7,12 @@ module.exports = {
     if (token) {
       token = token.split(' ')[1]
       jwt.verify(token, process.env.JWT_KEY, (error, result) => {
-        console.log(error)
         if ((error && error.name === 'JsonWebTokenError') || (error && error.name === 'TokenExpiredError')) {
           response.status(403).send({
             success: false,
             message: error.message
           })
         } else {
-          console.log(result)
           if (result.user_level === 1) {
             next()
           } else {

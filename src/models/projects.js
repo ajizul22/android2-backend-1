@@ -21,11 +21,9 @@ module.exports = {
       })
     })
   },
-  createProjectModel: (projectName, projectDesc, projectType) => {
+  createProjectModel: (setData) => {
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO project (project_name, project_desc, project_type) VALUES 
-        ('${projectName}', '${projectDesc}', '${projectType}')`
-      db.query(query, (err, result, _fields) => {
+      db.query('INSERT INTO project SET ?', setData, (err, result, _fields) => {
         if (!err) {
           resolve(result)
         } else {
