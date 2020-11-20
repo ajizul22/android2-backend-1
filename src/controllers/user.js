@@ -46,7 +46,7 @@ module.exports = {
             user_level
           }
           const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1h' })
-          payload = {...payload, token}
+          payload = { ...payload, token }
           response.send({
             success: true,
             message: 'Success Login!',
