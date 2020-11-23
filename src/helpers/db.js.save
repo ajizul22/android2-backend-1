@@ -1,0 +1,17 @@
+const mysql = require('mysql')
+require('dotenv').config()
+
+const connection = mysql.createConnection({
+  host : 'localhost',
+  user: 'arkaandroid',
+  password: 'arka1234',
+  database: 
+connection.connect((err) => {
+  if (err) { console.log(err) }
+  else {
+    console.log('Database Connected!')
+  }
+  
+})
+
+module.exports = connection
