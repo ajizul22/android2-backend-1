@@ -31,7 +31,7 @@ app.use('/project', projectRouter)
 app.use('/user', userRouter)
 
 app.get('/', (_request, response) => {
-  response.send('Backend by Android2!')
+  response.send('Simple Web Service by Android2!')
 })
 
 app.listen(port, () => {
